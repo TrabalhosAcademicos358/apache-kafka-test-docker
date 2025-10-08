@@ -1,144 +1,126 @@
+# 🧱 Apache Kafka (KRaft Mode) + Kafka UI --- Docker Compose Setup
 
-## 🧱 Apache Kafka (KRaft Mode) — Docker Compose Setup
+## 📘 Descrição
 
-### 📘 Descrição
-
-Este ambiente configura o **Apache Kafka** em modo **KRaft** (sem Zookeeper) utilizando  **Docker Compose** .
-
-Ideal para desenvolvimento local, testes e aprendizado sobre o Kafka moderno.
-
----
-
-### ⚙️ Estrutura do Projeto
-
-<preclass="overflow-visible!"data-start="480"data-end="526"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre!">`<span><span>`.
-
-├── docker-compose.yml
-
-└── README.md
-
-`</code></div>``</div></pre>`
+Este ambiente sobe o **Apache Kafka (modo KRaft)** junto com o **Kafka
+UI** da [Provectus](https://github.com/provectus/kafka-ui).
+Com isso, você pode criar tópicos, enviar mensagens e inspecionar
+consumidores direto pelo browser ou pelo terminal.
 
 ---
 
-### 🐋 1. Subir o Kafka
+## ⚙️ Estrutura do Projeto
 
-Execute no terminal:
+    .
+    ├── docker-compose.yml
+    └── README.md
 
-<preclass="overflow-visible!"data-start="580"data-end="612"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`docker compose up -d
+---
 
-`</code></div>``</div></pre>`
+## 🐋 1. Subir os containers
 
-Isso irá iniciar um único container Kafka acessível em `localhost:9092`.
+```bash
+docker compose up -d
+```
 
-Verifique se o serviço está rodando:
+Verifique:
 
-<preclass="overflow-visible!"data-start="726"data-end="747"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`docker ps
-
-`</code></div>``</div></pre>`
+```bash
+docker ps
+```
 
 Saída esperada:
 
-<preclass="overflow-visible!"data-start="765"data-end="906"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre!">`<span><span>`CONTAINER ID   IMAGE                PORTS                    NAMES
-
-abc123456789   apache/kafka:latest  0.0.0.0:9092->9092/tcp   kafka
-
-`</code></div>``</div></pre>`
+    kafka-ui     0.0.0.0:8080->8080/tcp
+    kafka        0.0.0.0:9092->9092/tcp
 
 ---
 
-### 📦 2. Acessar o container Kafka
+## 💻 2. Acessar o container Kafka por bash
 
-<preclass="overflow-visible!"data-start="950"data-end="988"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`docker `<span>`exec`<span>` -it kafka bash
+Caso prefira usar os comandos do Kafka diretamente, entre no container:
 
-`</code></div>``</div></pre>`
+```bash
+docker exec -it kafka bash
+```
 
-Os scripts do Kafka estão em:
+Os binários do Kafka ficam em:
 
-<preclass="overflow-visible!"data-start="1020"data-end="1042"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre!">`<span><span>`/opt/kafka/bin
+    /opt/kafka/bin
 
-`</code></div>``</div></pre>`
+Exemplos de uso: 
 
----
+* listar tópicos:
 
-### 🧩 3. Criar um tópico
+  ```shell
+  /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+  ```
+* Criar um tópico
 
-<preclass="overflow-visible!"data-start="1076"data-end="1188"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`/opt/kafka/bin/kafka-topics.sh --create \
+  ```shell
+  /opt/kafka/bin/kafka-topics.sh --create --topic meu-topico --bootstrap-server localhost:9092
+  ```
+* Usar o **Producer** (enviar mensagens)
 
-  --topic meu-topico \
+  ```shell
+  /opt/kafka/bin/kafka-console-producer.sh --topic meu-topico --bootstrap-server localhost:9092
+  ```
+* Usar o ***Consumer** (ler mensagem)*
 
-  --bootstrap-server localhost:9092
-
-`</code></div>``</div></pre>`
-
-Listar tópicos existentes:
-
-<preclass="overflow-visible!"data-start="1218"data-end="1301"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`/opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
-
-`</code></div>``</div></pre>`
-
----
-
-### 📨 4. Enviar mensagens (Producer)
-
-<preclass="overflow-visible!"data-start="1347"data-end="1460"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`/opt/kafka/bin/kafka-console-producer.sh \
-
-  --topic meu-topico \
-
-  --bootstrap-server localhost:9092
-
-`</code></div>``</div></pre>`
-
-Digite mensagens e pressione **Enter** para enviar:
-
-<preclass="overflow-visible!"data-start="1514"data-end="1547"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre!">`<span><span>`> mensagem 1`<span>`
-
-`<span>`> mensagem 2`<span>`
-
-`</code></div>``</div></pre>`
+  ```shell
+  /opt/kafka/bin/kafka-console-consumer.sh --topic meu-topico --from-beginning --bootstrap-server localhost:9092
+  ```
 
 ---
 
-### 👂 5. Ler mensagens (Consumer)
+## 🌐 3. Acessar o Kafka UI
 
-Em outro terminal:
+Abra no navegador:
+👉 [http://localhost:8080](http://localhost:8080)
 
-<preclass="overflow-visible!"data-start="1610"data-end="1648"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`docker `<span>`exec`<span>` -it kafka bash
-
-`</code></div>``</div></pre>`
-
-Depois:
-
-<preclass="overflow-visible!"data-start="1658"data-end="1792"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`/opt/kafka/bin/kafka-console-consumer.sh \
-
-  --topic meu-topico \
-
-  --from-beginning \
-
-  --bootstrap-server localhost:9092
-
-`</code></div>``</div></pre>`
-
-As mensagens enviadas aparecerão em tempo real.
+Você verá a interface **Kafka UI**, com o cluster "local" já conectado.
 
 ---
 
-### 🧹 6. Parar o ambiente
+## 🧩 4. Usando a interface
 
-<preclass="overflow-visible!"data-start="1876"data-end="1907"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`docker compose down
-
-`</code></div>``</div></pre>`
-
-Para também remover volumes e dados persistidos:
-
-<preclass="overflow-visible!"data-start="1959"data-end="1993"><divclass="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary"><divclass="sticky top-9"><divclass="absolute end-0 bottom-0 flex h-9 items-center pe-2"><divclass="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs">`</div></div>``</div>`<divclass="overflow-y-auto p-4"dir="ltr"><codeclass="whitespace-pre! language-bash">`<span><span>`docker compose down -v
-
-`</code></div>``</div></pre>`
+- **Tópicos** → criar, listar e deletar tópicos.\
+- **Mensagens** → produzir e consumir direto na UI.\
+- **Consumers** → visualizar grupos de consumidores.\
+- **Configurações** → editar parâmetros do cluster.
 
 ---
 
-### 📚 Referências
+## 🧹 5. Parar tudo
 
-* [Apache Kafka Official Docs]()
-* [Kafka KRaft Mode Overview]()
-* [Apache Kafka Docker Image]()
+```bash
+docker compose down
+```
+
+Para também remover volumes e dados:
+
+```bash
+docker compose down -v
+```
+
+---
+
+## 💡 Dica Extra
+
+Se quiser testar vários clusters, basta adicionar novos blocos no
+`docker-compose.yml`, por exemplo:
+
+```yaml
+KAFKA_CLUSTERS_1_NAME: staging
+KAFKA_CLUSTERS_1_BOOTSTRAPSERVERS: kafka-staging:9092
+```
+
+---
+
+## 📚 Referências
+
+- [Apache Kafka --- Documentação
+  Oficial](https://kafka.apache.org/documentation/)
+- [Kafka UI --- GitHub](https://github.com/provectus/kafka-ui)
+- [Kafka KRaft Mode ---
+  Overview](https://kafka.apache.org/documentation/#kraft)
